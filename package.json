@@ -1,5 +1,5 @@
 {
-  "name": "MaterialNote",
+  "name": "materialnote",
   "version": "1.2.1",
   "description": "A fork of Summernote.js ported to Materialize",
   "devDependencies": {
