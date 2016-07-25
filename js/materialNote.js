@@ -104,6 +104,24 @@ var isFontInstalled = function(fontName) {
     return originalWidth !== width;
 };
 
+var hasCodeMirror = !!window.CodeMirror;
+
+if (!hasCodeMirror && isSupportAmd && require) {
+    if (require.hasOwnProperty('resolve')) {
+        try {
+            // If CodeMirror can't be resolved, `require.resolve` will throw an
+            // exception and `hasCodeMirror` won't be set to `true`.
+            require.resolve('CodeMirror');
+
+            hasCodeMirror = true;
+        } catch (e) {
+            hasCodeMirror = false;
+        }
+    } else if (require.hasOwnProperty('specified')) {
+        hasCodeMirror = require.specified('CodeMirror');
+    }
+}
+
 
 var userAgent = navigator.userAgent;
 
@@ -126,7 +144,7 @@ var agent = {
     /** @property {String} jqueryVersion current jQuery version string  */
     jqueryVersion: parseFloat($.fn.jquery),
     isSupportAmd: isSupportAmd,
-    hasCodeMirror: isSupportAmd ? require.specified('CodeMirror') : !!window.CodeMirror,
+    hasCodeMirror: hasCodeMirror,
     isFontInstalled: isFontInstalled,
     isW3CRangeSupport: !!document.createRange
 };
@@ -4185,6 +4203,14 @@ var dom = (function() {
     this.isEmpty = function($editable) {
       return dom.isEmpty($editable[0]) || dom.emptyPara === $editable.html();
     };
+
+    /**
+     * Removes all contents and restores the editable instance to an _emptyPara_.
+    */
+    this.empty = function($editable) {
+      $editable.html(dom.emptyPara);
+      return $editable.html();
+    };
   };
 
   /**
@@ -4861,9 +4887,6 @@ var dom = (function() {
             }
             chunk = new Array(level + 1).join('    ') + chunk.trim();
 
-            //console.log(level);
-            //console.log(chunk);
-            //console.log(code);
 
             if (code.length === 0) {
                 return chunk;
@@ -5677,9 +5700,6 @@ var dom = (function() {
             c: Math.ceil(posOffset.x / gridUnit) || 1,
             r: Math.ceil(posOffset.y / gridUnit) || 1
         };
-        /*console.log(posOffset);
-        console.log(dim);
-        console.log('------------------');*/
 
         var tableOptions = [];
             if ($hoverableOption.is(':checked')) tableOptions.push('hoverable');
@@ -6703,8 +6723,6 @@ var dom = (function() {
         var invertedKeyMap = func.invertObject(keyMap);
         var $buttons = $container.find('.btn');
 
-        console.log($container);
-
         $buttons.each(function(i, elBtn) {
           var $btn = $(elBtn);
           var sShortcut = invertedKeyMap[$btn.data('event')];
@@ -6721,7 +6739,7 @@ var dom = (function() {
           $btn.attr('data-position', 'bottom');
           $btn.attr('data-tooltip', text);
           $btn.removeAttr('title');
-        }).ckTooltip({
+        }).tooltip({
           container: $container,
           position: 'top',
           delay: 30
@@ -6879,12 +6897,10 @@ var dom = (function() {
         // following toolbar
         function followingBar() {
             // $(window).unbind('scroll');
-            // console.log($._data( $(window)[0], "events" ));
             $(window).scroll(function() {
                 var isFullscreen = $editor.hasClass('fullscreen');
 
                 if (isFullscreen) {
-                  console.log("fullscreen");
                   return false;
                 }
 
@@ -6902,8 +6918,7 @@ var dom = (function() {
                 // check if the web app is currently using another static bar
                 otherBarHeight = $("." + options.otherStaticBarClass).outerHeight();
                 if (!otherBarHeight) otherBarHeight = 0;
-                //console.log(otherBarHeight);
-                
+
                 currentOffset = $(document).scrollTop();
                 toolbarOffset = toolbar.offset().top;
                 editorOffsetTop = $editor.offset().top;
