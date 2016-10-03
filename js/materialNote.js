@@ -4763,16 +4763,6 @@ var dom = (function() {
 
 
   var CodeMirror;
-  if (agent.hasCodeMirror) {
-    if (agent.isSupportAmd) {
-      require(['CodeMirror'], function(cm) {
-        CodeMirror = cm;
-      });
-    } else {
-      CodeMirror = window.CodeMirror;
-    }
-  }
-
   /**
    * @class Codeview
    */
