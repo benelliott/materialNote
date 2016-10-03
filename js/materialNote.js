@@ -104,24 +104,7 @@ var isFontInstalled = function(fontName) {
     return originalWidth !== width;
 };
 
-var hasCodeMirror = !!window.CodeMirror;
-
-if (!hasCodeMirror && isSupportAmd && require) {
-    if (require.hasOwnProperty('resolve')) {
-        try {
-            // If CodeMirror can't be resolved, `require.resolve` will throw an
-            // exception and `hasCodeMirror` won't be set to `true`.
-            require.resolve('CodeMirror');
-
-            hasCodeMirror = true;
-        } catch (e) {
-            hasCodeMirror = false;
-        }
-    } else if (require.hasOwnProperty('specified')) {
-        hasCodeMirror = require.specified('CodeMirror');
-    }
-}
-
+var hasCodeMirror = false;
 
 var userAgent = navigator.userAgent;
 
